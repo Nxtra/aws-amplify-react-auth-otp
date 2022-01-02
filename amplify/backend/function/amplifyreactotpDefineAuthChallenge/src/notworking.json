@@ -1,0 +1,27 @@
+{
+  "version":"1",
+  "region":"eu-west-1",
+  "userPoolId":"eu-west-1_85ELumwP1",
+  "userName":"+32499489785",
+  "callerContext":{
+     "awsSdkVersion":"aws-sdk-unknown-unknown",
+     "clientId":"2832e4evbqenj1b55d324puql"
+  },
+  "triggerSource":"DefineAuthChallenge_Authentication",
+  "request":{
+     "userAttributes":{
+        "sub":"a285c050-8fac-40d5-a25b-278a3df2b02d",
+        "cognito:user_status":"CONFIRMED",
+        "phone_number_verified":"true",
+        "phone_number":"+32499489785"
+     },
+     "session":[
+        
+     ]
+  },
+  "response":{
+     "challengeName":"CUSTOM_CHALLENGE",
+     "issueTokens":false,
+     "failAuthentication":false
+  }
+}

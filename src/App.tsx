@@ -102,16 +102,14 @@ function App() {
     try{
       const cognitoUser = await Auth.sendCustomChallengeAnswer(session, otp)
       if(cognitoUser){
-        try {
-          // This will throw an error if the user is not yet authenticated:
-          await Auth.currentSession();
-          // Getting passed this call means the user is succesfully authenticated
+        const userIsAuthenticated = await isUserAuthenticated()
+        if(userIsAuthenticated){
           console.log("Successfully verified otp", cognitoUser)
           setUser(cognitoUser);
           setMessage(SIGNEDIN);
           setSession(null);
-        } catch(err) {
-            console.log('Apparently the user did not enter the right code because the user is not authenticated yet');
+        } else {
+          console.log('Apparently the user did not enter the right code because the user is not authenticated yet');
         }
       }
     } catch(error){
@@ -178,3 +176,15 @@ function App() {
 }
 
 export default App;
+
+const isUserAuthenticated = async () => {
+  try {
+    // This will throw an error if the user is not yet authenticated:
+    await Auth.currentSession();
+    return true
+    // Getting passed this call means the user is succesfully authenticated
+    
+  } catch(err) {
+    return false
+  }
+}
