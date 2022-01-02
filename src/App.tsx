@@ -13,19 +13,20 @@ import Analytics from '@aws-amplify/analytics';
 import awsconfig from './aws-exports';
 Amplify.configure(awsconfig);
 
-const NOTSIGNIN = 'You are NOT logged in';
-const SIGNEDIN = 'You have logged in successfully';
-const SIGNEDOUT = 'You have logged out successfully';
-const WAITINGFOROTP = 'Enter OTP number';
-const VERIFYNUMBER = 'Verifying number (Country code +XX needed)';
-
 function App() {
   const [message, setMessage] = useState('Welcome to AWS Amplify Demo');
   const [user, setUser] = useState(null);
   const [session, setSession] = useState(null);
   const [otp, setOtp] = useState('');
   const [number, setNumber] = useState('');
+  const [attemptNumber, setAttemptNumber] = useState(0)
   const password = Math.random().toString(10) + 'Abc#';
+
+  const NOTSIGNIN = 'You are NOT logged in';
+  const SIGNEDIN = 'You have logged in successfully';
+  const SIGNEDOUT = 'You have logged out successfully';
+  const WAITINGFOROTP = `Enter OTP number.`;
+  const VERIFYNUMBER = 'Verifying number (Country code +XX needed)';
 
   useEffect(() => {
     console.log('Ready to auth');
@@ -67,6 +68,7 @@ function App() {
         console.log("Called signIn with following result: ", result)
         setSession(result);
         setMessage(WAITINGFOROTP);
+        setAttemptNumber(1)
       })
       .catch((e) => {
         if (e.code === 'UserNotFoundException') {
@@ -75,6 +77,7 @@ function App() {
         } else if (e.code === 'UsernameExistsException') {
           console.log("User already exists, signing in")
           setMessage(WAITINGFOROTP);
+          setAttemptNumber(1)
           signIn();
         } else {
           console.log(e.code);
@@ -109,6 +112,9 @@ function App() {
           setMessage(SIGNEDIN);
           setSession(null);
         } else {
+          alert("Code was incorrect, try again.")
+          setAttemptNumber(attemptNumber + 1); 
+          setOtp('')
           console.log('Apparently the user did not enter the right code because the user is not authenticated yet');
         }
       }
@@ -117,6 +123,7 @@ function App() {
       alert("You failed to give the correct otp code three times!")
       setUser(null)
       setSession(null)
+      setAttemptNumber(0)
       setMessage(error.message);
       setOtp('');
       console.log(error);
@@ -129,6 +136,8 @@ function App() {
       <header className='App-header'>
         <img src={logo} className='App-logo' alt='logo' />
         <p>{message}</p>
+        {attemptNumber > 0 && <p>{`Attempt ${attemptNumber}/3`}</p>}
+        
         {!user && !session && (
           <div>
             <InputGroup className='mb-3'>
