@@ -7,6 +7,7 @@ exports.handler = async (event, context, callback) => {
   //Create a random number for otp
   let secretLoginCode 
   const phoneNumber = event.request.userAttributes.phone_number;
+  const shouldResendCode = event.request.clientMetadata?.resend === 'yes' ? true : false;
 
   //For Debugging
   console.log(event, context);
@@ -16,6 +17,7 @@ exports.handler = async (event, context, callback) => {
       // This is a new auth session
       // Generate a new secret login code and mail it to the user
       secretLoginCode = Math.random().toString(10).substr(2, 6);
+      await sendSms(phoneNumber, secretLoginCode)
   } else {
       // There's an existing session. Don't generate new digits but
       // re-use the code from the current session. This allows the user to
@@ -23,9 +25,14 @@ exports.handler = async (event, context, callback) => {
       // then needing to e-mail the user an all new code again.    
       const previousChallenge = event.request.session.slice(-1)[0];
       secretLoginCode = previousChallenge.challengeMetadata.match(/CODE-(\d*)/)[1];
+      if(shouldResendCode){
+        console.log("Asked to resend the code, will do")
+        await sendSms(phoneNumber, secretLoginCode)
+      }
   }
+  console.log(`OTP code = ${secretLoginCode}`)
 
-  await sendSms(phoneNumber, secretLoginCode)
+  
 
   //set return params
   event.response.privateChallengeParameters = {};

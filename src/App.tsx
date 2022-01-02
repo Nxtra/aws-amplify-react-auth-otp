@@ -121,7 +121,27 @@ function App() {
       }
     } catch(error){
       console.log("Wrong otp. Signing in again ..", error)
-      alert("You failed to give the correct otp code three times!")
+      if(attemptNumber === 3){
+        alert("You failed to give the correct otp code three times!")
+      }
+      setUser(null)
+      setSession(null)
+      setAttemptNumber(0)
+      setMessage(error.message);
+      setOtp('');
+      console.log(error);
+    }
+
+  };
+  const askToResendOtpCode = async () => {
+    console.log("Asking to resend otp code: ", session, otp)
+    try{
+      const cognitoUser = await Auth.sendCustomChallengeAnswer(session, '0', {'resend': 'yes'})
+      alert("OTP code has been resend. Give it a minute.")
+      setAttemptNumber(attemptNumber + 1); 
+      setOtp('')
+    } catch(error){
+      console.log("Something went wrong ..", error)
       setUser(null)
       setSession(null)
       setAttemptNumber(0)
@@ -132,12 +152,14 @@ function App() {
 
   };
 
+  
+
   return (
     <div className='App'>
       <header className='App-header'>
         <img src={logo} className='App-logo' alt='logo' />
         <p>{message}</p>
-        {attemptNumber > 0 && attemptNumber < 3 && <p>{`Attempt ${attemptNumber}/3`}</p>}
+        {attemptNumber > 0 && attemptNumber < 4 && <p>{`Attempt ${attemptNumber}/3`}</p>}
         
         {!user && !session && (
           <div>
@@ -171,6 +193,12 @@ function App() {
           </div>
         )}
         <div>
+
+          <div style={{display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: '1rem'}}>
+          {attemptNumber > 0 && attemptNumber < 3 && <Button variant='outline-primary' onClick={askToResendOtpCode}>
+              Resend code
+            </Button>}
+
           <ButtonGroup>
             <Button variant='outline-primary' onClick={verifyAuth}>
               Am I signed in?
@@ -179,6 +207,7 @@ function App() {
               Sign Out
             </Button>
           </ButtonGroup>
+          </div>
         </div>
       </header>
     </div>
