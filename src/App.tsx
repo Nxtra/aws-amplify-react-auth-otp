@@ -55,6 +55,7 @@ function App() {
       Auth.signOut();
       setUser(null);
       setOtp('');
+      setAttemptNumber(0)
       setMessage(SIGNEDOUT);
     } else {
       setMessage(NOTSIGNIN);
@@ -136,7 +137,7 @@ function App() {
       <header className='App-header'>
         <img src={logo} className='App-logo' alt='logo' />
         <p>{message}</p>
-        {attemptNumber > 0 && <p>{`Attempt ${attemptNumber}/3`}</p>}
+        {attemptNumber > 0 && attemptNumber < 3 && <p>{`Attempt ${attemptNumber}/3`}</p>}
         
         {!user && !session && (
           <div>

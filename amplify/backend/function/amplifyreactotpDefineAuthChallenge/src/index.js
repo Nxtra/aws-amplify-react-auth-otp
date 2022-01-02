@@ -1,7 +1,7 @@
 
 exports.handler = async (event, context, callback) => {
   console.log(event.request);
-    console.log('This is the sessions array', JSON.stringify(event.request.session));
+  console.log('This is the sessions array', JSON.stringify(event.request.session));
   
   // If user is not registered
   if (event.request.userNotFound) {

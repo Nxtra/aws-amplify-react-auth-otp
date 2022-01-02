@@ -693,4 +693,5 @@ With Amplify Hosting, I already pushed my codes and published them at [otp.bryan
 
 ## Resources
 https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-define-auth-challenge.html
+https://aws.amazon.com/blogs/mobile/implementing-passwordless-email-authentication-with-amazon-cognito/
 https://blog.bitsrc.io/building-otp-authentication-with-reactjs-and-aws-amplify-c5fd2e517fac
