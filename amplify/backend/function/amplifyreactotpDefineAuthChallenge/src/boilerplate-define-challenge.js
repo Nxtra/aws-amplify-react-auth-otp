@@ -1,4 +1,7 @@
 exports.handler = (event, context) => {
+  //For Debugging
+  console.log(event, context);
+  console.log('This is the sessions array', JSON.stringify(event.request.session));
   if (event.request.session.length === 0) {
     event.response.issueTokens = false;
     event.response.failAuthentication = false;

@@ -690,3 +690,7 @@ export default App;
 ## Test Yourself
 
 With Amplify Hosting, I already pushed my codes and published them at [otp.bryanchua.io](https://otp.bryanchua.io).
+
+## Resources
+https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-define-auth-challenge.html
+https://blog.bitsrc.io/building-otp-authentication-with-reactjs-and-aws-amplify-c5fd2e517fac
