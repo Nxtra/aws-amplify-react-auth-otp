@@ -1,13 +1,17 @@
-/*
-  this file will loop through all js modules which are uploaded to the lambda resource,
-  provided that the file names (without extension) are included in the "MODULES" env variable.
-  "MODULES" is a comma-delimmited string.
-*/
+exports.handler = async (event, context, callback) => {
+  // Confirm the user
+  event.response.autoConfirmUser = true;
 
-exports.handler = (event, context, callback) => {
-  const modules = process.env.MODULES.split(',');
-  for (let i = 0; i < modules.length; i += 1) {
-    const { handler } = require(`./${modules[i]}`);
-    handler(event, context, callback);
+  // Set the email as verified if it is in the request
+  if (event.request.userAttributes.hasOwnProperty('email')) {
+    event.response.autoVerifyEmail = true;
   }
+
+  // Set the phone number as verified if it is in the request
+  if (event.request.userAttributes.hasOwnProperty('phone_number')) {
+    event.response.autoVerifyPhone = true;
+  }
+
+  // Return to Amazon Cognito
+  return event
 };

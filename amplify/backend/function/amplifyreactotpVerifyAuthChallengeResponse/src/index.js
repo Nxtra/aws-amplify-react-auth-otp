@@ -1,13 +1,13 @@
-/*
-  this file will loop through all js modules which are uploaded to the lambda resource,
-  provided that the file names (without extension) are included in the "MODULES" env variable.
-  "MODULES" is a comma-delimmited string.
-*/
-
-exports.handler = (event, context, callback) => {
-  const modules = process.env.MODULES.split(',');
-  for (let i = 0; i < modules.length; i += 1) {
-    const { handler } = require(`./${modules[i]}`);
-    handler(event, context, callback);
+exports.handler = async (event, context) => {
+  console.log(event);
+  console.log('This is the sessions array', JSON.stringify(event.request.session));
+  if (
+    event.request.privateChallengeParameters.answer ===
+    event.request.challengeAnswer
+  ) {
+    event.response.answerCorrect = true;
+  } else {
+    event.response.answerCorrect = false;
   }
+  return event
 };

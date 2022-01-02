@@ -1,13 +1,51 @@
-/*
-  this file will loop through all js modules which are uploaded to the lambda resource,
-  provided that the file names (without extension) are included in the "MODULES" env variable.
-  "MODULES" is a comma-delimmited string.
-*/
+/* tslint:disable */
+/* eslint-disable */
+const AWS = require('aws-sdk');
 
-exports.handler = (event, context, callback) => {
-  const modules = process.env.MODULES.split(',');
-  for (let i = 0; i < modules.length; i += 1) {
-    const { handler } = require(`./${modules[i]}`);
-    handler(event, context, callback);
-  }
+exports.handler = async (event, context, callback) => {
+  //Create a random number for otp
+  const challengeAnswer = Math.random().toString(10).substr(2, 6);
+  const phoneNumber = event.request.userAttributes.phone_number;
+
+  //For Debugging
+  console.log(event, context);
+  console.log('This is the sessions array', JSON.stringify(event.request.session));
+
+  //sns sms
+  // const sns = new AWS.SNS({ region: 'us-east-1' });
+  // sns.publish(
+  //   {
+  //     Message: 'your otp: ' + challengeAnswer,
+  //     PhoneNumber: phoneNumber,
+  //     MessageStructure: 'string',
+  //     MessageAttributes: {
+  //       'AWS.SNS.SMS.SenderID': {
+  //         DataType: 'String',
+  //         StringValue: 'AMPLIFY',
+  //       },
+  //       'AWS.SNS.SMS.SMSType': {
+  //         DataType: 'String',
+  //         StringValue: 'Transactional',
+  //       },
+  //     },
+  //   },
+  //   function (err, data) {
+  //     if (err) {
+  //       console.log(err.stack);
+  //       console.log(data);
+  //       return;
+  //     }
+  //     console.log(`SMS sent to ${phoneNumber} and otp = ${challengeAnswer}`);
+  //     return data;
+  //   }
+  // );
+
+  console.log(`SMS sent to ${phoneNumber} and otp = ${challengeAnswer}`)
+
+  //set return params
+  event.response.privateChallengeParameters = {};
+  event.response.privateChallengeParameters.answer = challengeAnswer;
+  event.response.challengeMetadata = 'CUSTOM_CHALLENGE';
+
+  return event
 };
