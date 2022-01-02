@@ -64,13 +64,16 @@ function App() {
     setMessage(VERIFYNUMBER);
     Auth.signIn(number)
       .then((result) => {
+        console.log("Called signIn with following result: ", result)
         setSession(result);
         setMessage(WAITINGFOROTP);
       })
       .catch((e) => {
         if (e.code === 'UserNotFoundException') {
+          console.log("New user, signing up first..")
           signUp();
         } else if (e.code === 'UsernameExistsException') {
+          console.log("User already exists, signing in")
           setMessage(WAITINGFOROTP);
           signIn();
         } else {
@@ -87,23 +90,40 @@ function App() {
       attributes: {
         phone_number: number,
       },
-    }).then(() => signIn());
+    }).then(() => {
+      console.log("User successfully signed up. Signing in now..");
+      signIn()
+    });
     return result;
   };
 
-  const verifyOtp = () => {
-    Auth.sendCustomChallengeAnswer(session, otp)
-      .then((user) => {
-        setUser(user);
-        setMessage(SIGNEDIN);
-        setSession(null);
-      })
-      .catch((err) => {
-        signIn();
-        setMessage(err.message);
-        setOtp('');
-        console.log(err);
-      });
+  const verifyOtp = async () => {
+    console.log("Verifying otp: ", session, otp)
+    try{
+      const cognitoUser = await Auth.sendCustomChallengeAnswer(session, otp)
+      if(cognitoUser){
+        try {
+          // This will throw an error if the user is not yet authenticated:
+          await Auth.currentSession();
+          // Getting passed this call means the user is succesfully authenticated
+          console.log("Successfully verified otp", cognitoUser)
+          setUser(cognitoUser);
+          setMessage(SIGNEDIN);
+          setSession(null);
+        } catch(err) {
+            console.log('Apparently the user did not enter the right code because the user is not authenticated yet');
+        }
+      }
+    } catch(error){
+      console.log("Wrong otp. Signing in again ..", error)
+      alert("You failed to give the correct otp code three times!")
+      setUser(null)
+      setSession(null)
+      setMessage(error.message);
+      setOtp('');
+      console.log(error);
+    }
+
   };
 
   return (
